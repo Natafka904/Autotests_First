@@ -59,7 +59,7 @@ public class FirstTest {
         WebElement catalogButton = catalogButtons.stream()
                 .filter(WebElement::isDisplayed) //оставляем только видимые (должен быть 1)
                 .findAny() // берем любой видимый
-                .orElseThrow(() -> new AssertionError("Не найдена кнопка открытия каталога")); //если не нашли кнопку - ругаемся
+                .orElseThrow(() -> new AssertionError("Не найдена кнопка открытия всех каталогов")); //если не нашли кнопку - ругаемся
         catalogButton.click();
 
         List<WebElement> elements = driver.findElements(By.cssSelector(".Page__BlockElementsPageCatalog > .Page__ElementPageCatalog > div > a"));
