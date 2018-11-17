@@ -55,10 +55,16 @@ public class FirstTest {
 
     @Test
     public void testOpenCatalog() {
-        WebElement summaryCatalogButton = driver.findElement(By.xpath("/html/body/div[2]/div/div[2]/div[1]/a"));
-        summaryCatalogButton.click();
+        List<WebElement> catalogButtons = driver.findElements(By.className("Header__CatalogAllLink")); // есть 2 кнопки каталога, одна из которых видима (в зависимости от размера экрана)
+        WebElement catalogButton = catalogButtons.stream()
+                .filter(WebElement::isDisplayed) //оставляем только видимые (должен быть 1)
+                .findAny() // берем любой видимый
+                .orElseThrow(() -> new AssertionError("Не найдена кнопка открытия каталога")); //если не нашли кнопку - ругаемся
+        catalogButton.click();
 
         List<WebElement> elements = driver.findElements(By.cssSelector(".Page__BlockElementsPageCatalog > .Page__ElementPageCatalog > div > a"));
+        Assert.assertTrue("Не найден ни один каталог", !elements.isEmpty());
+
         int index = new Random().nextInt(elements.size());
         WebElement element = elements.get(index);
         String elementText = element.getText();
