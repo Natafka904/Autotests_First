@@ -6,6 +6,14 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -27,10 +35,10 @@ public class FirstTest {
 
     @AfterClass
     public static void tearDown() {
-//        WebElement menuUser = driver.findElement(By.className("Header__BlockNameUser"));
-//        menuUser.click();
-//        WebElement logoutButton = driver.findElement(By.id("yt0"));
-//        logoutButton.click();
+        WebElement menuUser = driver.findElement(By.className("Header__BlockNameUser"));
+        menuUser.click();
+        WebElement logoutButton = driver.findElement(By.id("yt0"));
+        logoutButton.click();
         driver.quit();
     }
 
@@ -78,17 +86,28 @@ public class FirstTest {
 
     }
 
-
     @Test
-    public void testFeedback() {
+    public void testFeedback() throws IOException {
         String page = driver.getPageSource();
         String regexp = "<a class=\"ModelReviewsHome__NameModel\" href.*?>(.*?)</a>";
         Pattern pattern = Pattern.compile(regexp);
         Matcher matcher = pattern.matcher(page);
+        List<String> reviews = new ArrayList<>();
         while (matcher.find()) {
-            System.out.println(matcher.group(1));
+            reviews.add(matcher.group(1));
         }
+        printToFile(reviews);
 
+    }
 
+    private void printToFile(List<String> reviews) throws IOException {
+        Files.deleteIfExists(Paths.get("Review.csv")); //если такой файл есть - удаляем
+        try (FileOutputStream stream = new FileOutputStream("Review.csv"); //создаем стрим для записи в файл
+             OutputStreamWriter writer = new OutputStreamWriter(stream, Charset.forName("UTF-8"))) //испльзуем writer для записи строк
+        {
+            for (String f : reviews) {
+                writer.append(f).append(";");
+            }
+        }
     }
 }
