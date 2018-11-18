@@ -1,9 +1,6 @@
 package Autotests;
 
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -12,6 +9,8 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FirstTest {
 
@@ -28,11 +27,17 @@ public class FirstTest {
 
     @AfterClass
     public static void tearDown() {
-        WebElement menuUser = driver.findElement(By.className("Header__BlockNameUser"));
-        menuUser.click();
-        WebElement logoutButton = driver.findElement(By.id("yt0"));
-        logoutButton.click();
+//        WebElement menuUser = driver.findElement(By.className("Header__BlockNameUser"));
+//        menuUser.click();
+//        WebElement logoutButton = driver.findElement(By.id("yt0"));
+//        logoutButton.click();
         driver.quit();
+    }
+
+    @Before
+    public void openMainPage() {
+        WebElement logo = driver.findElement(By.id("Layer_1"));
+        logo.click();
     }
 
     @Test
@@ -64,12 +69,26 @@ public class FirstTest {
 
         List<WebElement> elements = driver.findElements(By.cssSelector(".Page__BlockElementsPageCatalog > .Page__ElementPageCatalog > div > a"));
         Assert.assertTrue("Не найден ни один каталог", !elements.isEmpty());
-
         int index = new Random().nextInt(elements.size());
         WebElement element = elements.get(index);
         String elementText = element.getText();
         element.click();
         String activePageTitle = driver.findElement(By.className("Page__TitleActivePage")).getText();
         Assert.assertEquals(elementText, activePageTitle);
+
+    }
+
+
+    @Test
+    public void testFeedback() {
+        String page = driver.getPageSource();
+        String regexp = "<a class=\"ModelReviewsHome__NameModel\" href.*?>(.*?)</a>";
+        Pattern pattern = Pattern.compile(regexp);
+        Matcher matcher = pattern.matcher(page);
+        while (matcher.find()) {
+            System.out.println(matcher.group(1));
+        }
+
+
     }
 }
